@@ -166,9 +166,9 @@ def read_can_and_publish():
     try:
         error, iframe = can.readMessage()
         if error == ERROR.ERROR_OK:
-            mqtt_client.publish(TOPIC_PUB + hex(iframe.can_id), ujson.dumps({'time': time.time_ns(), 'd0': iframe.data[0], 'd1': iframe.data[1],
-                                                        'd2': iframe.data[2], 'd3': iframe.data[3], 'd4': iframe.data[4],
-                                                        'd5': iframe.data[5],'d6': iframe.data[6],'d7': iframe.data[7]}))
+            data_dict = {f'd{i}': iframe.data[i] for i in range(iframe.dlc)}
+            data_dict['time'] = time.time_ns()
+            mqtt_client.publish(TOPIC_PUB + hex(iframe.can_id), ujson.dumps(data_dict))
     except Exception as e:
         print('Read CAN error:', e)
 
